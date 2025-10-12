@@ -40,8 +40,7 @@ mkfs.ext4 "$ROOT_PART"
 
 echo "Mounting..."
 mount "$ROOT_PART" /mnt
-mkdir -p /mnt/boot/efi
-mount "$EFI_PART" /mnt/boot/efi
+mount --mkdir "$EFI_PART" /mnt/boot
 
 # === Base system install ===
 echo "Installing base system..."
@@ -84,7 +83,6 @@ sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 # Install and configure GRUB (UEFI)
 echo "Installing GRUB (UEFI)..."
 # Ensure efibootmgr and grub packages are present (installed via pacstrap)
-mkdir -p /boot/efi
 
 # Install grub to the EFI directory
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
