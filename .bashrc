@@ -29,7 +29,7 @@ alias update='sudo pacman -Syu'
 alias edit='nano'
 
 # Neofetch on shell start
-if command -v neofetch &> /dev/null; then
+if command -v fastfetch &> /dev/null; then
   neofetch --ascii_distro arch_small --color_blocks off --stdout
 fi
 
