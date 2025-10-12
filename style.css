@@ -1,34 +1,56 @@
 * {
-    font-family: "JetBrainsMono Nerd Font", monospace;
-    font-size: 12pt;
-    color: #E0C9FF;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12pt;
+  color: #EAD7FF;
 }
 
 window#waybar {
-    background: rgba(30, 0, 50, 0.6);
-    border-bottom: 2px solid #9A4BFF;
-    padding: 4px 10px;
+  background: linear-gradient(90deg, #2A005F, #190033);
+  border-bottom: 2px solid #9A4BFF;
+  padding: 6px 10px;
+  transition: background 0.3s ease;
 }
 
+/* Workspace buttons */
 #workspaces button {
-    background: transparent;
-    border: none;
-    padding: 4px 10px;
-    color: #B68CFF;
-    transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 4px 12px;
+  margin: 0 4px;
+  color: #C9A4FF;
+  transition: all 0.2s ease;
 }
 
 #workspaces button.active {
-    color: #FFFFFF;
-    background: linear-gradient(90deg, #6C1FFF, #B67FFF);
-    border-radius: 8px;
+  background: linear-gradient(135deg, #8A2EFF, #C06AFF);
+  color: #fff;
+  box-shadow: 0 0 8px #B067FF;
 }
 
+#workspaces button:hover {
+  background: rgba(154, 75, 255, 0.2);
+}
+
+/* Modules */
 #clock, #cpu, #memory, #temperature, #battery, #pulseaudio {
-    margin: 0 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin: 0 6px;
+  transition: all 0.3s ease;
 }
 
+#clock:hover, #cpu:hover, #memory:hover, #temperature:hover, #battery:hover, #pulseaudio:hover {
+  background: rgba(154, 75, 255, 0.2);
+}
+
+/* Tray spacing */
 #tray {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
+/* Separator (optional aesthetic divider) */
+#custom-separator {
+  color: #6C1FFF;
+  margin: 0 8px;
+}
