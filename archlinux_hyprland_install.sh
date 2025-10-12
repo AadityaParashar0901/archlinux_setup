@@ -72,6 +72,7 @@ echo "${HOSTNAME}" > /etc/hostname
 systemctl enable NetworkManager
 
 # Root & user setup
+echo "Adding User"
 echo "root:${PASSWORD}" | chpasswd
 useradd -m -G wheel -s /bin/bash ${USERNAME}
 echo "${USERNAME}:${PASSWORD}" | chpasswd
