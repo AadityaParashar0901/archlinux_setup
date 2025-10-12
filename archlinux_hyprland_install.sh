@@ -27,13 +27,13 @@ echo "Wiping partitions on $DISK..."
 sgdisk -Z "$DISK"
 echo "Creating partitions..."
 sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"EFI System Partition" "$DISK"
-sgdisk -n 2:0:+4G -t 2:8200 -c 2:"Linux Swap" "$DISK"
+sgdisk -n 2:0:+1G -t 2:8200 -c 2:"Linux Swap" "$DISK"
 sgdisk -n 3:0:0 -t 3:8300 -c 3:"Linux filesystem" "$DISK"
 
 echo "Formatting partitions..."
 mkfs.fat -F32 "$EFI_PART"
 mkfs.ext4 "$ROOT_PART"
-swapon "$SWAP_PART"
+mkswap "$SWAP_PART"
 
 echo "Mounting..."
 mount "$ROOT_PART" /mnt
