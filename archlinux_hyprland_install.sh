@@ -1,187 +1,147 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -e
 
-# ========================
-# CONFIG
-# ========================
 DISK="/dev/sda"
-HOSTNAME="archlinux"
 USERNAME="aaditya"
 PASSWORD="@r4q6n2h0f5t6r2#"
+HOSTNAME="archlinux"
 
-echo "Installing Arch Linux on $DISK (this will wipe it)"
-read -p "Press ENTER to continue..."
+echo "=== Arch Linux Automated Installer ==="
+echo "Target Disk: $DISK"
+read -p "Press ENTER to continue (or Ctrl+C to cancel)..."
 
-# ========================
-# PARTITION & FORMAT
-# ========================
-wipefs -a "$DISK"
-parted -s "$DISK" mklabel gpt
-parted -s "$DISK" mkpart ESP fat32 1MiB 513MiB
-parted -s "$DISK" set 1 esp on
-parted -s "$DISK" mkpart ROOT ext4 513MiB 100%
+# Update system clock
+timedatectl set-ntp true
 
-mkfs.fat -F32 "${DISK}1"
-mkfs.ext4 -F "${DISK}2"
+# Partition the disk
+echo "Partitioning $DISK..."
+sgdisk -Z $DISK
+sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"EFI System Partition" $DISK
+sgdisk -n 2:0:0 -t 2:8300 -c 2:"Linux filesystem" $DISK
 
-mount "${DISK}2" /mnt
-mkdir -p /mnt/boot
-mount "${DISK}1" /mnt/boot
+# Format partitions
+mkfs.fat -F32 ${DISK}1
+mkfs.ext4 ${DISK}2
 
-# ========================
-# BASE INSTALL
-# ========================
-pacstrap /mnt base linux linux-firmware networkmanager sudo vim git nano
+# Mount
+mount ${DISK}2 /mnt
+mkdir -p /mnt/boot/efi
+mount ${DISK}1 /mnt/boot/efi
 
+# Install base packages
+echo "Installing base system..."
+pacstrap /mnt base linux linux-firmware vim networkmanager sudo
+
+# Fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
-# ========================
-# CONFIGURE SYSTEM
-# ========================
+# Chroot and configure
 arch-chroot /mnt /bin/bash <<EOF
-echo "$HOSTNAME" > /etc/hostname
+set -e
 ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 hwclock --systohc
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
 locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "$HOSTNAME" > /etc/hostname
 
+# Network
 systemctl enable NetworkManager
 
+# Create user
 useradd -m -G wheel -s /bin/bash $USERNAME
 echo "$USERNAME:$PASSWORD" | chpasswd
 echo "root:$PASSWORD" | chpasswd
-echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
+sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
-# Bootloader
-pacman --noconfirm -S grub efibootmgr
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=ARCHUSB
-grub-mkconfig -o /boot/grub/grub.cfg
+# Install GUI-related packages
+pacman -S --noconfirm git nano wayland hyprland waybar rofi alacritty \
+    ttf-roboto ttf-roboto-mono wofi sddm sddm-wayland neofetch \
+    pipewire pipewire-pulse wireplumber xdg-desktop-portal-hyprland \
+    network-manager-applet polkit-gnome grim slurp wl-clipboard \
+    firefox thunar brightnessctl playerctl pamixer
 
-# ========================
-# DESKTOP ENVIRONMENT
-# ========================
-pacman --noconfirm -S \
-  hyprland hyprlock waybar alacritty firefox \
-  thunar network-manager-applet \
-  xdg-desktop-portal-hyprland polkit-gnome \
-  pipewire wireplumber pipewire-alsa pipewire-pulse \
-  ttf-dejavu ttf-font-awesome \
-  grim slurp wl-clipboard swaybg wofi \
-  gdm
+# Enable login manager
+systemctl enable sddm
 
-# Enable GDM login manager
-systemctl enable gdm
+# Setup Hyprland config
+sudo -u $USERNAME mkdir -p /home/$USERNAME/.config/{hypr,waybar,wofi,alacritty}
+sudo -u $USERNAME mkdir -p /home/$USERNAME/Pictures
 
-# Create Hyprland session entry for GDM
-mkdir -p /usr/share/wayland-sessions
-cat >/usr/share/wayland-sessions/hyprland.desktop <<'DESKTOP'
-[Desktop Entry]
-Name=Hyprland
-Comment=Dynamic tiling Wayland compositor
-Exec=Hyprland
-Type=Application
-DesktopNames=Hyprland
-DESKTOP
+# Sample wallpaper
+curl -L -o /home/$USERNAME/Pictures/wallpaper.png https://images.unsplash.com/photo-1503264116251-35a269479413?w=1920
 
-# Auto login user (optional)
-mkdir -p /etc/gdm
-cat >/etc/gdm/custom.conf <<'AUTOGDM'
-[daemon]
-AutomaticLoginEnable=True
-AutomaticLogin=aadi
-WaylandEnable=true
-AUTOGDM
-
-# ========================
-# HYPRLAND CONFIG
-# ========================
-sudo -u $USERNAME mkdir -p /home/$USERNAME/.config/{hypr,waybar}
-
-cat <<HYPR >/home/$USERNAME/.config/hypr/hyprland.conf
+# Hyprland config
+cat <<HYPRCONF | sudo -u $USERNAME tee /home/$USERNAME/.config/hypr/hyprland.conf >/dev/null
 monitor=,preferred,auto,1
+exec = waybar &
+exec = wofi --show drun
+exec = alacritty
 
-exec-once = hyprctl setcursor "Adwaita" 24
-exec-once = waybar &
-exec-once = nm-applet &
-exec-once = firefox &
-exec-once = thunar &
-exec-once = swaybg -i /usr/share/backgrounds/archlinux/archbtw.jpg -m fill
-
-# Lock screen shortcut
-bind = SUPER, L, exec, hyprlock
-
-bind = SUPER, RETURN, exec, alacritty
-bind = SUPER, W, exec, firefox
-bind = SUPER, E, exec, thunar
-bind = SUPER, Q, killactive,
-bind = SUPER, F, fullscreen,
-bind = SUPER, ESCAPE, exit,
-bind = SUPER, R, exec, wofi --show drun
-
-input {
-  kb_layout = us
-  follow_mouse = 1
+general {
+    gaps_in = 5
+    border_size = 2
+    col.active_border = rgba(00ff99ff)
+    col.inactive_border = rgba(555555aa)
 }
 
 decoration {
-  rounding = 8
-  blur = yes
-  blur_size = 8
-  drop_shadow = yes
-  shadow_range = 10
-  shadow_render_power = 2
+    rounding = 10
+    blur = yes
 }
 
-animations {
-  enabled = yes
-  bezier = easeOutQuint, 0.23, 1, 0.32, 1
-  animation = windows, 1, 7, easeOutQuint
-  animation = border, 1, 10, easeOutQuint
-  animation = fade, 1, 7, easeOutQuint
+input {
+    kb_layout = us
+    follow_mouse = 1
 }
 
-windowrulev2 = float, class:^(pavucontrol)\$
-windowrulev2 = size 800 600, class:^(pavucontrol)\$
-HYPR
+bind = SUPER, RETURN, exec, alacritty
+bind = SUPER, Q, killactive,
+bind = SUPER, F, fullscreen
+bind = SUPER, E, exec, thunar
+bind = SUPER, D, exec, wofi --show drun
+bind = SUPER, L, exec, hyprctl dispatch exit
 
-cat <<WAYBAR >/home/$USERNAME/.config/waybar/config.jsonc
+workspace = 1, monitor:HDMI-A-1
+HYPRCONF
+
+# Waybar config
+cat <<WAYBARCONF | sudo -u $USERNAME tee /home/$USERNAME/.config/waybar/config.jsonc >/dev/null
 {
   "layer": "top",
-  "position": "top",
-  "modules-left": ["clock", "cpu", "memory"],
-  "modules-center": ["window"],
-  "modules-right": ["network", "pulseaudio", "tray"],
-
-  "clock": { "format": "{:%H:%M}" },
-  "cpu": { "format": "CPU {usage}%" },
-  "memory": { "format": "RAM {used:0.1f}G" },
-  "network": { "format-wifi": "{essid} ({signalStrength}%)", "format-ethernet": "{ifname}" },
-  "pulseaudio": { "format": "VOL {volume}%" }
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "battery", "network"],
+  "clock": { "format": "%a %b %d %H:%M" }
 }
-WAYBAR
+WAYBARCONF
 
-cat <<STYLE >/home/$USERNAME/.config/waybar/style.css
+cat <<WAYBARSTYLE | sudo -u $USERNAME tee /home/$USERNAME/.config/waybar/style.css >/dev/null
 * {
-  font-family: JetBrainsMono, sans-serif;
-  font-size: 11pt;
-  color: #e0e0e0;
+  font-family: "Roboto";
+  font-size: 12px;
+  background: rgba(20, 20, 20, 0.9);
+  color: #00ff99;
 }
-window { background: #1e1e2e; }
-#clock, #cpu, #memory, #network, #pulseaudio { padding: 0 10px; }
-STYLE
+WAYBARSTYLE
 
-chown -R $USERNAME:$USERNAME /home/$USERNAME/.config
-
-# ========================
-# VM FIXES
-# ========================
-echo "WLR_NO_HARDWARE_CURSORS=1" >> /etc/environment
-echo "WLR_RENDERER_ALLOW_SOFTWARE=1" >> /etc/environment
+# Alacritty config
+cat <<ALACRITTY | sudo -u $USERNAME tee /home/$USERNAME/.config/alacritty/alacritty.yml >/dev/null
+font:
+  normal:
+    family: Roboto Mono
+  size: 12
+colors:
+  primary:
+    background: '0x000000'
+    foreground: '0x00ff99'
+window:
+  opacity: 0.95
+ALACRITTY
 
 EOF
 
-umount -R /mnt
-echo "Installation complete!"
-echo "Username: $USERNAME Password: $PASSWORD"
-echo "Boot your Arch system — GDM will start Hyprland automatically."
+echo "=== Installation complete! ==="
+echo "You can now reboot into your new Arch Linux system."
+
