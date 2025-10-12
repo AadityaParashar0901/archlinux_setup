@@ -1,0 +1,34 @@
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12pt;
+    color: #E0C9FF;
+}
+
+window#waybar {
+    background: rgba(30, 0, 50, 0.6);
+    border-bottom: 2px solid #9A4BFF;
+    padding: 4px 10px;
+}
+
+#workspaces button {
+    background: transparent;
+    border: none;
+    padding: 4px 10px;
+    color: #B68CFF;
+    transition: all 0.2s ease;
+}
+
+#workspaces button.active {
+    color: #FFFFFF;
+    background: linear-gradient(90deg, #6C1FFF, #B67FFF);
+    border-radius: 8px;
+}
+
+#clock, #cpu, #memory, #temperature, #battery, #pulseaudio {
+    margin: 0 8px;
+}
+
+#tray {
+    margin-left: 10px;
+}
+

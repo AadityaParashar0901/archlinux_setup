@@ -49,10 +49,11 @@ pacstrap /mnt base linux linux-firmware vim networkmanager sudo \
 
 # Add packages we want later (GUI + fonts etc.)
 pacstrap /mnt git nano wayland hyprland waybar rofi alacritty \
-    ttf-roboto ttf-roboto-mono wofi sddm fastfetch \
+    ttf-roboto ttf-roboto-mono wofi fastfetch \
     pipewire pipewire-pulse wireplumber xdg-desktop-portal-hyprland \
     network-manager-applet polkit-gnome grim slurp wl-clipboard \
-    firefox thunar brightnessctl playerctl pamixer swww imagemagick
+    firefox thunar brightnessctl playerctl pamixer hyprpaper imagemagick \
+    hyprlock swayidle
 
 # Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -85,7 +86,7 @@ echo "Installing GRUB (UEFI)..."
 # Ensure efibootmgr and grub packages are present (installed via pacstrap)
 
 # Install grub to the EFI directory
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
 # Prepare fonts for GRUB so it looks nicer
 mkdir -p /boot/grub/fonts
