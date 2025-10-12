@@ -87,7 +87,7 @@ echo "Installing GRUB (UEFI)..."
 mkdir -p /boot/efi
 
 # Install grub to the EFI directory
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck --no-nvram || true
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 
 # Prepare fonts for GRUB so it looks nicer
 mkdir -p /boot/grub/fonts
