@@ -49,10 +49,7 @@ pacstrap -K /mnt ttf-roboto wayland hyprland waybar rofi alacritty \
   pipewire pipewire-pulse wireplumber xdg-desktop-portal-hyprland \
   network-manager-applet polkit-gnome hyprpaper imagemagick
 pacstrap -K /mnt hyprlock swayidle wofi grim slurp wl-clipboard \
-  brightnessctl playerctl pamixer
-# Add dolphin file manager
-pacstrap -K /mnt dolphin dolphin-plugins ffmpegthumbs icoutils \
-  kde-thumbnailer-apk kdegraphics-thumbnailers resvg taglib
+  brightnessctl playerctl pamixer thunar
 
 # Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -79,10 +76,12 @@ echo "root:${PASSWORD}" | chpasswd
 useradd -m -G wheel -s /bin/bash ${USERNAME}
 echo "${USERNAME}:${PASSWORD}" | chpasswd
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+EOF
 
 # Install and configure GRUB (UEFI)
 echo "Installing GRUB (UEFI)..."
-
+read -r -p "Press Enter"
+arch-chroot /mnt /bin/bash <<EOF
 # Install grub to the EFI directory
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
