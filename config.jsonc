@@ -6,8 +6,10 @@
   "modules-right": ["pulseaudio", "cpu", "memory", "temperature", "battery", "tray"],
 
   "clock": {
-    "format": "  %I:%M %p    %d %b %Y"
-  },
+    "format": "{:%I:%M %p    %d %b %Y}",
+    "tooltip-format": "{:%A, %d %B %Y  %H:%M:%S}",
+    "interval": 60
+  }
   "cpu": {
     "format": "  {usage}%"
   },
