@@ -45,11 +45,16 @@ echo "Installing base system..."
 pacstrap -K /mnt base linux linux-firmware vim networkmanager sudo \
   efibootmgr grub git nano fastfetch
 # Add packages we want later (GUI + fonts etc.)
-pacstrap -K /mnt ttf-roboto wayland hyprland waybar rofi alacritty \
-  pipewire pipewire-pulse wireplumber xdg-desktop-portal-hyprland \
-  network-manager-applet polkit-gnome hyprpaper imagemagick
-pacstrap -K /mnt hyprlock swayidle wofi grim slurp wl-clipboard \
-  brightnessctl playerctl pamixer thunar
+pacstrap -K /mnt hyprland waybar hyprpaper hyprlock rofi-wayland alacritty \
+  xdg-desktop-portal-hyprland xdg-desktop-portal xdg-desktop-portal-gtk
+pacstrap -K /mnt pipewire wireplumber pipewire-pulse pavucontrol helvum vlc
+pacstrap -K /mnt thunar tumbler file-roller okular gthumb
+pacstrap -K /mnt network-manager-applet nm-connection-editor firefox
+pacstrap -K /mnt htop btop gnome-disk-utility pavucontrol brightnessctl pamixer playerctl
+pacstrap -K /mnt lxappearance qt5ct qt6ct papirus-icon-theme gnome-themes-extra nwg-look
+pacstrap -K /mnt cliphist wl-clipboard swaync grim slurp swappy
+pacstrap -K /mnt neovim wget curl flatpak filelight p7zip unzip
+pacstrap -K /mnt wlogout
 
 # Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
