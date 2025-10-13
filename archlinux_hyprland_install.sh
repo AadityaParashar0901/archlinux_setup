@@ -43,17 +43,10 @@ swapon "$SWAP_PART"
 # === Base system install ===
 echo "Installing base system..."
 pacstrap -K /mnt base linux linux-firmware vim networkmanager sudo \
-  efibootmgr grub git nano fastfetch
+  efibootmgr grub git nano fastfetch iwd
 # Add packages we want later (GUI + fonts etc.)
 pacstrap -K /mnt hyprland waybar hyprpaper hyprlock rofi-wayland alacritty \
   xdg-desktop-portal-hyprland xdg-desktop-portal xdg-desktop-portal-gtk
-pacstrap -K /mnt pipewire wireplumber pipewire-pulse pavucontrol helvum vlc
-pacstrap -K /mnt thunar tumbler file-roller okular gthumb
-pacstrap -K /mnt network-manager-applet nm-connection-editor firefox
-pacstrap -K /mnt htop btop gnome-disk-utility pavucontrol brightnessctl pamixer playerctl
-pacstrap -K /mnt lxappearance qt5ct qt6ct papirus-icon-theme gnome-themes-extra nwg-look
-pacstrap -K /mnt cliphist wl-clipboard swaync grim slurp swappy
-pacstrap -K /mnt neovim wget curl flatpak filelight p7zip unzip
 
 # Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -61,6 +54,8 @@ genfstab -U /mnt >> /mnt/etc/fstab
 # === Chroot configuration ===
 arch-chroot /mnt /bin/bash <<EOF
 set -euo pipefail
+
+pacman -Scc
 
 # Timezone and locale
 ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
@@ -74,6 +69,15 @@ echo "${HOSTNAME}" > /etc/hostname
 
 # Enable NetworkManager
 systemctl enable NetworkManager
+
+pacstrap -S pipewire wireplumber pipewire-pulse pavucontrol helvum vlc \
+  thunar tumbler file-roller okular gthumb \
+  network-manager-applet nm-connection-editor firefox \
+  htop btop gnome-disk-utility pavucontrol brightnessctl pamixer playerctl \
+  lxappearance qt5ct qt6ct papirus-icon-theme gnome-themes-extra nwg-look \
+  cliphist wl-clipboard swaync grim slurp swappy \
+  neovim wget curl flatpak filelight p7zip unzip \
+pacman -Scc
 
 # Root & user setup
 echo "Adding User"
