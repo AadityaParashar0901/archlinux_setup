@@ -79,6 +79,9 @@ pacstrap -S pipewire wireplumber pipewire-pulse pavucontrol helvum vlc \
   neovim wget curl flatpak filelight p7zip unzip \
 pacman -Scc
 
+EOF
+
+arch-chroot /mnt /bin/bash <<EOF
 # Root & user setup
 echo "Adding User"
 echo "root:${PASSWORD}" | chpasswd
@@ -89,7 +92,6 @@ EOF
 
 # Install and configure GRUB (UEFI)
 echo "Installing GRUB (UEFI)..."
-read -r -p "Press Enter"
 arch-chroot /mnt /bin/bash <<EOF
 # Install grub to the EFI directory
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
@@ -109,7 +111,5 @@ chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 EOF
 
-echo "=== Installation finished on disk ${DISK} ==="
-echo "You can now unmount and reboot:"
-echo "  umount -R /mnt"
-echo "  reboot"
+umount-R /mnt
+reboot
