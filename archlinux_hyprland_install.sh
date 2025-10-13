@@ -54,7 +54,6 @@ pacstrap -K /mnt htop btop gnome-disk-utility pavucontrol brightnessctl pamixer 
 pacstrap -K /mnt lxappearance qt5ct qt6ct papirus-icon-theme gnome-themes-extra nwg-look
 pacstrap -K /mnt cliphist wl-clipboard swaync grim slurp swappy
 pacstrap -K /mnt neovim wget curl flatpak filelight p7zip unzip
-pacstrap -K /mnt wlogout
 
 # Generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
