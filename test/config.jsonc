@@ -1,0 +1,59 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["network", "wireplumber", "battery", "cpu", "memory", "tray"],
+
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "format": "{name}",
+    "on-click": "activate"
+  },
+
+  "hyprland/window": {
+    "format": "{}",
+    "max-length": 60
+  },
+
+  "clock": {
+    "format": "{:%a %d %b %I:%M %p}",
+    "tooltip-format": "{:%Y-%m-%d %H:%M:%S}"
+  },
+
+  "network": {
+    "format-wifi": "  {essid} ({signalStrength}%)",
+    "format-ethernet": "  {ifname}",
+    "format-disconnected": "  Disconnected"
+  },
+
+  "wireplumber": {
+    "format": "  {volume}%",
+    "format-muted": "  Muted",
+    "scroll-step": 5,
+    "on-click": "pwvucontrol"
+  },
+
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "interval": 30
+  },
+
+  "cpu": {
+    "format": "  {usage}%",
+    "interval": 5
+  },
+
+  "memory": {
+    "format": "  {used}G",
+    "interval": 5
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  }
+}
+
