@@ -108,6 +108,7 @@ curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/maste
 curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/style.css -o /home/${USERNAME}/.config/waybar/style.css
 curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/wallpaper.png -o /home/${USERNAME}/Pictures/wallpaper.png
 curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/hyprpaper_auto_wallpaper.sh -o /home/${USERNAME}/.config/hypr/hyprpaper_auto_wallpaper.sh
+chmod +x /home/${USERNAME}/.config/hypr/hyprpaper_auto_wallpaper.sh
 chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 EOF
