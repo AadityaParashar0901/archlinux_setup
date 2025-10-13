@@ -27,7 +27,7 @@ echo "Wiping partitions on $DISK..."
 sgdisk -Z "$DISK"
 echo "Creating partitions..."
 sgdisk -n 1:0:+512M -t 1:ef00 -c 1:"EFI System Partition" "$DISK"
-sgdisk -n 2:0:+1G -t 2:8200 -c 2:"Linux Swap" "$DISK"
+sgdisk -n 2:0:+512M -t 2:8200 -c 2:"Linux Swap" "$DISK"
 sgdisk -n 3:0:0 -t 3:8300 -c 3:"Linux filesystem" "$DISK"
 
 echo "Formatting partitions..."
@@ -43,7 +43,7 @@ swapon "$SWAP_PART"
 # === Base system install ===
 echo "Installing base system..."
 pacstrap -K /mnt base linux linux-firmware vim networkmanager sudo \
-  efibootmgr grub git nano fastfetch iwd
+  efibootmgr grub git nano fastfetch iwd htop btop curl
 # Add packages we want later (GUI + fonts etc.)
 pacstrap -K /mnt hyprland waybar hyprpaper hyprlock rofi-wayland alacritty \
   xdg-desktop-portal-hyprland xdg-desktop-portal xdg-desktop-portal-gtk
@@ -70,13 +70,13 @@ echo "${HOSTNAME}" > /etc/hostname
 # Enable NetworkManager
 systemctl enable NetworkManager
 
-pacstrap -S pipewire wireplumber pipewire-pulse pavucontrol helvum vlc \
+pacman -S pipewire wireplumber pipewire-pulse pavucontrol helvum vlc \
   thunar tumbler file-roller okular gthumb \
   network-manager-applet nm-connection-editor firefox \
-  htop btop gnome-disk-utility pavucontrol brightnessctl pamixer playerctl \
+  gnome-disk-utility pavucontrol brightnessctl pamixer playerctl \
   lxappearance qt5ct qt6ct papirus-icon-theme gnome-themes-extra nwg-look \
   cliphist wl-clipboard swaync grim slurp swappy \
-  neovim wget curl flatpak filelight p7zip unzip \
+  neovim wget flatpak filelight p7zip unzip \
 pacman -Scc
 
 EOF
@@ -107,6 +107,7 @@ curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/maste
 curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/config.jsonc -o /home/${USERNAME}/.config/waybar/config.jsonc
 curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/style.css -o /home/${USERNAME}/.config/waybar/style.css
 curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/wallpaper.png -o /home/${USERNAME}/Pictures/wallpaper.png
+curl https://raw.githubusercontent.com/AadityaParashar0901/archlinux_setup/master/hyprpaper_auto_wallpaper.sh -o /home/${USERNAME}/.config/hypr/hyprpaper_auto_wallpaper.sh
 chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 EOF
