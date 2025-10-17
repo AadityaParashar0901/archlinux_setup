@@ -113,5 +113,5 @@ chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 EOF
 
-umount-R /mnt
+umount -R /mnt
 reboot
