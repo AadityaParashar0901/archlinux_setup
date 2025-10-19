@@ -64,9 +64,6 @@ locale-gen
 # Hostname
 echo "${HOSTNAME}" > /etc/hostname
 
-# Enable NetworkManager
-systemctl enable NetworkManager
-
 EOF
 
 arch-chroot /mnt /bin/bash <<EOF
@@ -76,6 +73,9 @@ echo "root:${PASSWORD}" | chpasswd
 useradd -m -G wheel -s /bin/bash ${USERNAME}
 echo "${USERNAME}:${PASSWORD}" | chpasswd
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+
+# Enable NetworkManager
+systemctl enable NetworkManager
 EOF
 
 # Install and configure GRUB (UEFI)

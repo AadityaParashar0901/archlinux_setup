@@ -67,9 +67,6 @@ locale-gen
 # Hostname
 echo "${HOSTNAME}" > /etc/hostname
 
-# Enable NetworkManager
-systemctl enable NetworkManager
-
 pacman -S pipewire wireplumber pipewire-pulse pavucontrol helvum vlc \
   thunar tumbler file-roller okular gthumb \
   network-manager-applet nm-connection-editor firefox \
@@ -88,6 +85,9 @@ echo "root:${PASSWORD}" | chpasswd
 useradd -m -G wheel -s /bin/bash ${USERNAME}
 echo "${USERNAME}:${PASSWORD}" | chpasswd
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+
+# Enable NetworkManager
+systemctl enable NetworkManager
 EOF
 
 # Install and configure GRUB (UEFI)
